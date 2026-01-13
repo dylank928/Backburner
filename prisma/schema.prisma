@@ -1,0 +1,40 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String      @id @default(cuid())
+  clerkId   String      @unique
+  createdAt DateTime    @default(now())
+  excuseLogs ExcuseLog[]
+}
+
+model ExcuseLog {
+  id             String   @id @default(cuid())
+  userId         String
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  date           DateTime
+  intendedTask   String
+  excuseCategory String
+  note           String?
+  createdAt      DateTime @default(now())
+
+  @@unique([userId, date], name: "userId_date")
+  @@index([userId])
+  @@index([date])
+  @@index([excuseCategory])
+}
+
+model ExcuseCategory {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  createdAt DateTime @default(now())
+}
