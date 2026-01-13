@@ -26,7 +26,12 @@ A minimal, production-ready web app that helps users log why tasks were postpone
    ```
 
 2. **Set up environment variables**:
-   Create a `.env` file in the root directory:
+   Copy `.env.example` to `.env` and fill in your Clerk keys:
+   ```bash
+   cp .env.example .env
+   ```
+   
+   Or create a `.env` file manually in the root directory:
    ```env
    # Clerk Authentication
    NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=your_clerk_publishable_key
