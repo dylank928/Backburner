@@ -1,9 +1,14 @@
-import { auth, currentUser } from '@clerk/nextjs/server'
+import { auth } from '@clerk/nextjs/server'
 import { prisma } from './prisma'
 
 // Development mode: create a dummy user if auth is bypassed
 const DEV_BYPASS_AUTH = process.env.DEV_BYPASS_AUTH === 'true'
 
+/**
+ * Get or create user in database
+ * Note: This will be needed when we start logging data (Day 2+)
+ * For Day 1, this is kept for future use but not called
+ */
 export async function getOrCreateUser() {
   if (DEV_BYPASS_AUTH) {
     // Return a dummy user for development
@@ -42,18 +47,4 @@ export async function getOrCreateUser() {
       clerkId: userId,
     },
   })
-}
-
-export async function requireAuth() {
-  if (DEV_BYPASS_AUTH) {
-    return 'dev-user-bypass'
-  }
-  
-  const { userId } = await auth()
-  
-  if (!userId) {
-    throw new Error('Unauthorized')
-  }
-  
-  return userId
 }

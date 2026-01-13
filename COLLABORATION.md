@@ -7,11 +7,13 @@ For development and testing, you can share the same Clerk keys with your collabo
 ### Option 1: Share Keys Directly (Recommended for Development)
 
 1. **One person creates the Clerk account:**
+
    - Go to [clerk.com](https://clerk.com) and create an account
    - Create a new application
    - Copy the API keys from the dashboard
 
 2. **Share the keys securely:**
+
    - Use a secure messaging app (Signal, WhatsApp, etc.)
    - Or use a shared password manager
    - Or share via encrypted email
@@ -27,6 +29,7 @@ For development and testing, you can share the same Clerk keys with your collabo
 ### Option 2: Use Environment Variable Sharing Tools
 
 For teams, consider using:
+
 - **1Password Secrets Automation**
 - **Doppler** (free for small teams)
 - **GitHub Secrets** (for CI/CD)
@@ -35,17 +38,20 @@ For teams, consider using:
 ### Important Notes
 
 ⚠️ **Security Considerations:**
+
 - **Never commit `.env` files to git** (already in `.gitignore`)
 - **Never share keys in public channels** (Slack, Discord public channels, etc.)
 - For production, each environment should have separate Clerk applications
 - Test keys (`pk_test_...` and `sk_test_...`) are safe to share for development
 
 ✅ **What's Safe:**
+
 - Sharing test/development keys with trusted collaborators
 - Using the same keys for local development
 - Committing `.env.example` (it has no real keys)
 
 ❌ **What's NOT Safe:**
+
 - Committing real keys to git
 - Sharing production keys
 - Posting keys in public repositories or forums
@@ -87,6 +93,7 @@ By default, each person will have their own local SQLite database (`dev.db`). If
 ### Development Bypass Mode
 
 If you want to test without authentication, set in `.env`:
+
 ```
 DEV_BYPASS_AUTH=true
 NEXT_PUBLIC_DEV_BYPASS_AUTH=true

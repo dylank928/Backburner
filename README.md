@@ -2,12 +2,13 @@
 
 A minimal, production-ready web app that helps users log why tasks were postponed, then surfaces behavioral patterns over time.
 
-## Features
+## Features (Day 1 - MVP)
 
 - **Authentication**: Email-based login via Clerk
-- **Daily Logging**: Log one deferred task entry per day
-- **History**: View timeline of last 30 days with filtering
-- **Patterns**: Analytics view with charts showing excuse frequency, weekday patterns, and repeated excuses
+- **Dashboard**: Basic layout with empty state
+- **Logging**: Coming soon (Day 2+)
+- **History**: Coming soon (Day 2+)
+- **Patterns**: Coming soon (Day 2+)
 
 ## Tech Stack
 
@@ -69,24 +70,16 @@ A minimal, production-ready web app that helps users log why tasks were postpone
 
 ```
 app/
-  dashboard/     # Main dashboard page
-  log/           # Log entry page
-  history/       # History timeline page
-  patterns/      # Analytics/patterns page
-  api/           # API routes
+  dashboard/     # Main dashboard page (Day 1)
   layout.tsx     # Root layout with Clerk provider
   page.tsx       # Home page (redirects)
 
 components/
   Header.tsx     # App header with navigation
-  ExcuseForm.tsx # Form for logging entries
-  ExcuseTag.tsx  # Color-coded excuse category tags
-  PatternCard.tsx # Pattern display cards
 
 lib/
   auth.ts        # Authentication utilities
   prisma.ts      # Prisma client instance
-  analytics.ts   # Analytics aggregation functions
 
 prisma/
   schema.prisma  # Database schema

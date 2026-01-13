@@ -2,6 +2,7 @@ import { redirect } from 'next/navigation'
 import { auth } from '@clerk/nextjs/server'
 
 export default async function Home() {
+  // Simple redirect logic - middleware handles auth protection
   const DEV_BYPASS_AUTH = process.env.DEV_BYPASS_AUTH === 'true'
   
   if (DEV_BYPASS_AUTH) {
@@ -9,10 +10,5 @@ export default async function Home() {
   }
   
   const { userId } = await auth()
-  
-  if (userId) {
-    redirect('/dashboard')
-  } else {
-    redirect('/sign-in')
-  }
+  redirect(userId ? '/dashboard' : '/sign-in')
 }
