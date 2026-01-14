@@ -1,8 +1,32 @@
+import Link from 'next/link'
+import { prisma } from '@/lib/prisma'
+import { getOrCreateUser } from '@/lib/auth'
 import Header from '@/components/Header'
+import { startOfDay, endOfDay } from 'date-fns'
 
 export default async function DashboardPage() {
   // Auth is handled by middleware - if we reach here, user is authenticated
-  // No need for manual checks or database calls in Day 1
+  
+  // Get or create user in database
+  const user = await getOrCreateUser()
+  
+  // Check if today's log exists
+  const todayStart = startOfDay(new Date())
+  const todayEnd = endOfDay(new Date())
+  
+  const todayLog = await prisma.excuseLog.findFirst({
+    where: {
+      userId: user.id,
+      date: {
+        gte: todayStart,
+        lte: todayEnd,
+      },
+    },
+  })
+  
+  const hasTodayLog = !!todayLog
+  const ctaLabel = hasTodayLog ? "Edit today's entry" : "Log today"
+  const ctaAriaLabel = hasTodayLog ? "Edit today's entry" : "Log today"
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
@@ -21,13 +45,13 @@ export default async function DashboardPage() {
           <p className="text-base sm:text-lg text-gray-700 dark:text-gray-300 mb-6">
             Notice what keeps getting pushed back.
           </p>
-          <button
-            disabled
-            className="inline-block px-6 py-3 bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 rounded-lg font-medium cursor-not-allowed opacity-50"
-            aria-label="Log today (coming soon)"
+          <Link
+            href="/log"
+            className="inline-block px-6 py-3 bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 rounded-lg font-medium hover:bg-gray-800 dark:hover:bg-gray-200 transition-colors"
+            aria-label={ctaAriaLabel}
           >
-            Log today
-          </button>
+            {ctaLabel}
+          </Link>
         </div>
       </main>
     </div>
