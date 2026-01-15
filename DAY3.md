@@ -11,6 +11,7 @@ Implementing the History page and data fetching for Backburner.
 **Status:** ✅ Created
 
 **Initial Implementation:**
+
 - Route: `/history`
 - Auth-protected (middleware handles protection)
 - Page title: "History"
@@ -19,6 +20,7 @@ Implementing the History page and data fetching for Backburner.
 - No charts or analytics (chronological timeline only)
 
 **Features:**
+
 - Server-side data fetching
 - Consistent styling with dashboard page
 - Empty state handling
@@ -28,6 +30,7 @@ Implementing the History page and data fetching for Backburner.
 **Status:** ✅ Implemented
 
 **Requirements:**
+
 - Server-side data fetching
 - Sort logs by date (most recent first)
 - Limit results to 30 days max
@@ -39,7 +42,7 @@ Implementing the History page and data fetching for Backburner.
 
 ```typescript
 // Calculate date range: last 30 days
-const thirtyDaysAgo = startOfDay(subDays(new Date(), 30))
+const thirtyDaysAgo = startOfDay(subDays(new Date(), 30));
 
 // Fetch logs from the last 30 days, sorted by date (most recent first)
 const logs = await prisma.excuseLog.findMany({
@@ -50,12 +53,13 @@ const logs = await prisma.excuseLog.findMany({
     },
   },
   orderBy: {
-    date: 'desc',
+    date: "desc",
   },
-})
+});
 ```
 
 **Data Structure:**
+
 - Returns array of `ExcuseLog` objects
 - Each log contains:
   - `id`: Unique identifier
@@ -67,12 +71,14 @@ const logs = await prisma.excuseLog.findMany({
   - `createdAt`: DateTime
 
 **Date Handling:**
+
 - Uses `subDays` from `date-fns` to calculate 30-day cutoff
 - Uses `startOfDay` to normalize the cutoff date
 - Query uses `gte` (greater than or equal) to include all logs from 30 days ago onwards
 - Sorted by `date: 'desc'` for most recent first
 
 **Suitable for Grouping:**
+
 - Logs are sorted chronologically (newest first)
 - Date field is normalized (start of day)
 - Can be grouped by date using `startOfDay(log.date)` or similar
@@ -81,6 +87,7 @@ const logs = await prisma.excuseLog.findMany({
 ## Files Created/Modified
 
 ### Created:
+
 - `app/history/page.tsx` - History page route
 - `lib/history.ts` - Utility function for grouping logs by date
 - `lib/categoryColors.ts` - Utility function for consistent category colors
@@ -88,6 +95,7 @@ const logs = await prisma.excuseLog.findMany({
 - `DAY3.md` - This tracking file
 
 ### Modified:
+
 - `app/history/page.tsx` - Added data fetching logic, category fetching, and client component integration
 
 ### 3. Group Logs by Calendar Date
@@ -95,6 +103,7 @@ const logs = await prisma.excuseLog.findMany({
 **Status:** ✅ Implemented
 
 **Requirements:**
+
 - Each date appears once as a header
 - Logs under that date appear below it
 - Dates formatted in human-friendly way (e.g., "Monday, Jan 15")
@@ -104,6 +113,7 @@ const logs = await prisma.excuseLog.findMany({
 **Implementation:**
 
 Created utility function `lib/history.ts`:
+
 - `groupLogsByDate()` function groups ExcuseLog entries by calendar date
 - Uses `startOfDay()` to normalize dates for grouping
 - Formats dates using `format()` from `date-fns` with pattern `'EEEE, MMM d'`
@@ -113,6 +123,7 @@ Created utility function `lib/history.ts`:
   - `logs`: Array of logs for that date
 
 **History Page Display:**
+
 - Each date group rendered as a card with:
   - Date header (formatted label)
   - List of logs for that date
@@ -124,6 +135,7 @@ Created utility function `lib/history.ts`:
 - Clean, readable layout with proper spacing
 
 **Date Formatting:**
+
 - Uses `date-fns` `format()` function
 - Pattern: `'EEEE, MMM d'` produces "Monday, Jan 15"
 - Example outputs:
@@ -134,6 +146,7 @@ Created utility function `lib/history.ts`:
 ## Next Steps (Not Yet Implemented)
 
 ### Timeline Display
+
 - [x] Group logs by date ✅
 - [x] Display logs in chronological timeline ✅
 - [x] Format dates for display ✅
@@ -146,6 +159,7 @@ Created utility function `lib/history.ts`:
 **Status:** ✅ Implemented
 
 **Requirements:**
+
 - Display intended task
 - Excuse category as colored pill/tag
 - Optional note if present
@@ -157,6 +171,7 @@ Created utility function `lib/history.ts`:
 **Implementation:**
 
 Created utility function `lib/categoryColors.ts`:
+
 - `getCategoryColor()` function generates consistent colors for categories
 - Uses hash function to ensure same category = same color
 - Neutral color palette (grays, blues, purples, teals, indigos, slates)
@@ -164,6 +179,7 @@ Created utility function `lib/categoryColors.ts`:
 - Supports dark mode with appropriate color variants
 
 **History Page Display:**
+
 - Each entry shows:
   - **Intended task**: Prominent text (base font-medium)
   - **Excuse category**: Rendered as pill/tag with consistent color
@@ -173,6 +189,7 @@ Created utility function `lib/categoryColors.ts`:
 - Colors are muted and neutral (no judgmental tones)
 
 **Visual Design:**
+
 - Category tags: `rounded-full` with `px-2.5 py-1`
 - Consistent spacing: 3-unit gaps between elements
 - Note separator: Subtle border-top when note exists
@@ -184,6 +201,7 @@ Created utility function `lib/categoryColors.ts`:
 **Status:** ✅ Implemented
 
 **Requirements:**
+
 - Dropdown or pill-based filter
 - Filter applies instantly (client-side)
 - "All categories" option
@@ -195,6 +213,7 @@ Created utility function `lib/categoryColors.ts`:
 **Implementation:**
 
 Created client component `components/HistoryTimeline.tsx`:
+
 - Client-side filtering using React state and `useMemo`
 - Pill-based filter UI matching category tag styling
 - "All categories" button (default state)
@@ -203,6 +222,7 @@ Created client component `components/HistoryTimeline.tsx`:
 - Filtering preserves date grouping structure
 
 **Filter Behavior:**
+
 - Filter applies instantly on click (no debounce needed)
 - Filters logs client-side before re-grouping by date
 - Empty state shown when no entries match filter
@@ -210,6 +230,7 @@ Created client component `components/HistoryTimeline.tsx`:
 - Date grouping preserved within filtered results
 
 **UI Design:**
+
 - Filter bar: Card with flex-wrap layout for pills
 - "All categories": Dark button when selected
 - Category pills: Use same colors as entry tags
@@ -222,6 +243,7 @@ Created client component `components/HistoryTimeline.tsx`:
 **Status:** ✅ Implemented
 
 **Requirements:**
+
 - Detect excuse categories that appear more than once in visible history
 - Display subtle hint text: "You've logged this excuse before."
 - No counts displayed
@@ -232,12 +254,14 @@ Created client component `components/HistoryTimeline.tsx`:
 **Implementation:**
 
 Created utility function `getRepeatedCategories()` in `lib/history.ts`:
+
 - Counts occurrences of each category in the provided logs
 - Returns Set of category names that appear more than once
 - Works on filtered/visible logs (respects current filter state)
 - Efficient: Single pass through logs with Map for counting
 
 **HistoryTimeline Component:**
+
 - Uses `useMemo` to detect repeated categories from filtered logs
 - Shows hint text next to category tag when category is repeated
 - Hint text: "You've logged this excuse before." (neutral, observational)
@@ -245,6 +269,7 @@ Created utility function `getRepeatedCategories()` in `lib/history.ts`:
 - Only appears for categories that appear more than once in visible range
 
 **Visual Design:**
+
 - Hint text appears inline next to category tag
 - Subtle styling: `text-xs text-gray-500 dark:text-gray-400 italic`
 - No emphasis or highlighting (neutral tone)
@@ -256,6 +281,7 @@ Created utility function `getRepeatedCategories()` in `lib/history.ts`:
 **Status:** ✅ Implemented
 
 **Requirements:**
+
 - Handle edge cases: No logs, only one log, filter hides all results
 - Show calm, helpful empty-state messages
 - Do NOT suggest corrective actions
@@ -265,12 +291,14 @@ Created utility function `getRepeatedCategories()` in `lib/history.ts`:
 **Edge Cases Handled:**
 
 1. **No logs at all** (`logs.length === 0`):
+
    - Shows empty state before filter UI
    - Message: "No patterns yet — just observations."
    - Neutral, observational tone
    - No suggestions to start logging
 
 2. **Only one log exists** (`logs.length === 1`):
+
    - Log displays normally in timeline
    - No special empty state needed (not an empty state case)
    - Timeline shows single entry naturally
@@ -283,6 +311,7 @@ Created utility function `getRepeatedCategories()` in `lib/history.ts`:
    - User can see filter is active and adjust if desired
 
 **Implementation:**
+
 - All empty states use consistent styling
 - Same message for consistency: "No patterns yet — just observations."
 - No corrective action language
@@ -290,6 +319,7 @@ Created utility function `getRepeatedCategories()` in `lib/history.ts`:
 - Filter UI remains visible when logs exist (even if filtered out)
 
 ### UI Enhancements
+
 - [x] Date headers/sections ✅
 - [x] Entry cards or list items ✅
 - [x] Responsive layout for timeline ✅
