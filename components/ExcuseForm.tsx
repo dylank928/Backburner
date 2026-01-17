@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { getCategoryColorClasses } from '@/lib/categoryColors'
 
 interface ExcuseFormProps {
   categories: string[]
@@ -82,36 +83,41 @@ export default function ExcuseForm({ categories, existingLog }: ExcuseFormProps)
       </div>
 
       {/* Excuse Category */}
-      <div>
-        <label 
-          htmlFor="category" 
-          className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
-        >
-          Why was it deferred?
-        </label>
-        <select
-          id="category"
-          value={excuseCategory}
-          onChange={(e) => setExcuseCategory(e.target.value)}
-          required
-          disabled={categories.length === 0}
-          className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-gray-500 focus:border-transparent transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          <option value="">
-            {categories.length === 0 ? 'No categories available' : 'Select a reason'}
-          </option>
-          {categories.map((category) => (
-            <option key={category} value={category}>
-              {category}
-            </option>
-          ))}
-        </select>
-        {categories.length === 0 && (
-          <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
-            Run <code className="px-1 py-0.5 bg-gray-100 dark:bg-gray-800 rounded">npm run db:seed</code> to populate categories
+        <div className="space-y-2">
+          <p className="text-sm font-medium text-zinc-700">
+            Why did you postpone it?
           </p>
-        )}
-      </div>
+
+          {categories.length === 0 ? (
+            <p className="text-sm text-zinc-500">
+              No categories available yet.
+            </p>
+          ) : (
+            <div className="grid grid-cols-2 gap-3">
+              {categories.map((category) => {
+                const color = getCategoryColorClasses(category)
+                const selected = excuseCategory === category
+
+                return (
+                  <button
+                    key={category}
+                    type="button"
+                    onClick={() => setExcuseCategory(category)}
+                    className={`
+                      flex items-center gap-2 rounded-xl border px-3 py-3 text-sm transition
+                      ${selected
+                        ? `${color.bg} ${color.text} border-transparent`
+                        : 'border-zinc-200 text-zinc-700 hover:bg-zinc-50'}
+                    `}
+                  >
+                    <span className={`h-2.5 w-2.5 rounded-full ${color.bg}`} />
+                    {category}
+                  </button>
+                )
+              })}
+            </div>
+          )}
+        </div>
 
       {/* Optional Note */}
       <div>
@@ -147,13 +153,19 @@ export default function ExcuseForm({ categories, existingLog }: ExcuseFormProps)
 
       {/* Submit Button */}
       <div className="pt-2">
-        <button
-          type="submit"
-          disabled={!isFormValid || isSubmitting}
-          className="w-full px-6 py-3 bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 rounded-lg font-medium hover:bg-gray-800 dark:hover:bg-gray-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          {isSubmitting ? 'Saving...' : 'Save'}
-        </button>
+      <button
+        type="submit"
+        disabled={!isFormValid || isSubmitting}
+        className={`
+          w-full rounded-xl py-3 text-sm font-medium transition
+          ${isFormValid && !isSubmitting
+            ? 'bg-orange-500 text-white hover:bg-orange-600'
+            : 'bg-zinc-200 text-zinc-400 cursor-not-allowed'}
+        `}
+      >
+        {isSubmitting ? 'Logging…' : 'Log Excuse'}
+      </button>
+
       </div>
     </form>
   )

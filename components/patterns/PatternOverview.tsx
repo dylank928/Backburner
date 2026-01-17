@@ -7,53 +7,64 @@ interface PatternOverviewProps {
 }
 
 export function PatternOverview({ data }: PatternOverviewProps) {
-  const cards = []
+  const cards: {
+    label: string
+    value: string
+    description: string
+    tone?: 'warm' | 'neutral' | 'cool'
+  }[] = []
 
-  // Most backburned reason (last 7 days)
-  if (data.last7Days.topCategory) {
+  // ─────────────────────────────
+  // Most common reason (last 7 days)
+  // ─────────────────────────────
+  const top7DayCategory = data.last7Days.topCategory
+
+  if (top7DayCategory) {
+    const count =
+      data.last7Days.frequencyByCategory?.[top7DayCategory]
+
     cards.push({
-      label: 'Most backburned reason',
-      value: data.last7Days.topCategory,
-      description: 'Appears frequently this week',
+      label: 'Most common reason',
+      value: top7DayCategory,
+      description: count
+        ? `Appeared ${count} times`
+        : 'Appears frequently this week',
+      tone: 'warm',
     })
   }
 
+  // ─────────────────────────────
   // Most deferred day (last 30 days)
+  // ─────────────────────────────
   const weekdayEntries = Object.entries(data.last30Days.byWeekday)
+
   if (weekdayEntries.length > 0) {
     const [topDay] = weekdayEntries.sort((a, b) => b[1] - a[1])
+
     cards.push({
       label: 'Most deferred day',
       value: topDay[0],
       description: 'Based on recent entries',
+      tone: 'neutral',
     })
   }
 
-  // Repeated excuses
+  // ─────────────────────────────
+  // Recurring patterns (30 days)
+  // ─────────────────────────────
   if (data.last30Days.repeatedCategories.length > 0) {
     cards.push({
       label: 'Recurring pattern',
       value: data.last30Days.repeatedCategories.join(', '),
-      description: 'These reasons appear repeatedly',
+      description: 'Noticed in your recent logs',
+      tone: 'cool',
     })
   }
 
-  const hasEnoughData =
-    Object.keys(data.last30Days.frequencyByCategory).length >= 3
-
   return (
     <section className="space-y-8">
-      {/* Frequency Chart */}
-      <div>
-        <h2 className="text-sm font-medium text-zinc-500 mb-2">
-          Frequency (last 30 days)
-        </h2>
-
-        <FrequencyChart data={data.last30Days.frequencyByCategory} />
-      </div>
-
-      {/* Pattern Cards */}
-      <div className="grid gap-4 md:grid-cols-3">
+      {/* Insight Cards */}
+      <div className="grid gap-4">
         {cards.length > 0 ? (
           cards.map((card, index) => (
             <PatternCard key={index} {...card} />
@@ -65,6 +76,17 @@ export function PatternOverview({ data }: PatternOverviewProps) {
             description="Patterns emerge over time"
           />
         )}
+      </div>
+
+      {/* Frequency Chart (30 days) */}
+      <div>
+        <h2 className="text-sm font-medium text-zinc-500 mb-3">
+          Last 30 Days
+        </h2>
+
+        <FrequencyChart
+          data={data.last30Days.frequencyByCategory}
+        />
       </div>
     </section>
   )

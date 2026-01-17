@@ -25,22 +25,23 @@ export default async function PatternsPage() {
 
 
     return (
-        <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-            <Header />
-            <main className="max-w-4xl mx-auto px-4 py-8">
-                <div className="mb-8">
-                    <h1 className="text-3xl font-semibold text-gray-900 dark:text-gray-100 mb-2">
-                        Patterns
-                    </h1>
-                    <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6 sm:p-8 text-center">
-                        <p className="text-gray-600 dark:text-gray-400">
-                            Analyze your deferral habits and identify recurring themes.
-                        </p>
-                    </div>
-                </div>
-                {<PatternOverview data={analytics} />}
-            </main>
-        </div>
-    )
+        <main className="min-h-screen bg-gray-50 dark:bg-gray-900 px-4 py-6">
+          <div className="max-w-3xl mx-auto space-y-8">
+            {/* Page Intro */}
+            <section className="space-y-1">
+              <h1 className="text-2xl font-semibold text-zinc-900 dark:text-zinc-100">
+                Patterns
+              </h1>
+              <p className="text-sm text-zinc-500 dark:text-zinc-400">
+                Observations from your journey
+              </p>
+            </section>
+    
+            {/* Patterns Content */}
+            <PatternOverview data={analytics} />
+          </div>
+        </main>
+      )
+    
 
 }

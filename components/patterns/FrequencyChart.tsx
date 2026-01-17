@@ -3,45 +3,64 @@
 import {
   BarChart,
   Bar,
-  XAxis,
-  YAxis,
-  Tooltip,
   ResponsiveContainer,
+  XAxis,
+  Tooltip,
+  Cell,
 } from 'recharts'
+
+import { getCategoryColorClasses } from '@/lib/categoryColors'
+import { getCategoryColorHex } from '@/lib/categoryColors'
 
 interface FrequencyChartProps {
   data: Record<string, number>
 }
 
 export default function FrequencyChart({ data }: FrequencyChartProps) {
-  // Transform the data into an array of objects
-  const chartData = Object.entries(data).map(([category, count]) => ({
-    category,
+  const chartData = Object.entries(data).map(([label, count]) => ({
+    label,
     count,
   }))
 
-  // Display a message if there are fewer than 3 data points
-  if (chartData.length < 3) {
+  if (chartData.length === 0) {
     return (
-      <p className="text-sm text-muted-foreground">
-        Patterns emerge over time.
+      <p className="text-sm text-zinc-500">
+        Not enough data yet.
       </p>
     )
   }
 
-  // Render the bar chart
   return (
-    <div className="w-full h-64">
+    <div className="h-52 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 px-4 py-3">
       <ResponsiveContainer width="100%" height="100%">
         <BarChart data={chartData}>
-          <XAxis dataKey="category" />
-          <YAxis allowDecimals={false} />
-          <Tooltip />
-          <Bar
-            dataKey="count"
-            fill="#64748b" // Neutral slate color
-            radius={[4, 4, 0, 0]} // Rounded corners for the top of bars
+          {/* Category labels underneath */}
+          <XAxis
+            dataKey="label"
+            axisLine={false}
+            tickLine={false}
+            tick={{ fontSize: 12, fill: '#6b7280' }}
           />
+
+          {/* Tooltip (simple) */}
+          <Tooltip
+            cursor={{ fill: 'transparent' }}
+            contentStyle={{
+              borderRadius: 8,
+              borderColor: '#e5e7eb',
+              fontSize: 12,
+            }}
+          />
+
+          {/* Bars */}
+          <Bar dataKey="count" radius={[8, 8, 0, 0]}>
+            {chartData.map((entry) => (
+              <Cell
+                key={entry.label}
+                fill={getCategoryColorHex(entry.label)}
+              />
+            ))}
+          </Bar>
         </BarChart>
       </ResponsiveContainer>
     </div>
