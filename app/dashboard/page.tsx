@@ -1,8 +1,11 @@
 import Link from 'next/link'
 import { prisma } from '@/lib/prisma'
 import { getOrCreateUser } from '@/lib/auth'
-import Header from '@/components/Header'
-import { startOfDay, endOfDay } from 'date-fns'
+import { format, startOfDay, endOfDay } from 'date-fns'
+import { Card } from '@/components/ui/Card'
+import { PrimaryButton } from '@/components/ui/PrimaryButton'
+import { StatCard } from '@/components/ui/StatCard'
+import { Flame, CalendarDays, Clock } from 'lucide-react'
 
 export default async function DashboardPage() {
   // Auth is handled by middleware - if we reach here, user is authenticated
@@ -13,6 +16,10 @@ export default async function DashboardPage() {
   // Check if today's log exists
   const todayStart = startOfDay(new Date())
   const todayEnd = endOfDay(new Date())
+
+  // Get today's date
+  const today = new Date()
+  const formattedDate = format(today, 'EEEE, MMMM d')
   
   const todayLog = await prisma.excuseLog.findFirst({
     where: {
@@ -29,31 +36,67 @@ export default async function DashboardPage() {
   const ctaAriaLabel = hasTodayLog ? "Edit today's entry" : "Log today"
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      <Header />
-      <main className="max-w-4xl mx-auto px-4 py-8">
-        <div className="mb-8">
-          <h1 className="text-3xl font-semibold text-gray-900 dark:text-gray-100 mb-2">
-            Dashboard
-          </h1>
-          <p className="text-gray-600 dark:text-gray-400">
-            Track what gets deferred and notice patterns over time.
-          </p>
-        </div>
-
-        <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6 sm:p-8 text-center">
-          <p className="text-base sm:text-lg text-gray-700 dark:text-gray-300 mb-6">
-            Notice what keeps getting pushed back.
-          </p>
-          <Link
-            href="/log"
-            className="inline-block px-6 py-3 bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 rounded-lg font-medium hover:bg-gray-800 dark:hover:bg-gray-200 transition-colors"
-            aria-label={ctaAriaLabel}
-          >
-            {ctaLabel}
-          </Link>
-        </div>
-      </main>
-    </div>
+    <main className="mx-auto max-w-xl px-4 py-6 space-y-6">
+      {/* Greeting */}
+      <section>
+        <h1 className="text-2xl font-semibold text-zinc-900">
+          Welcome back
+        </h1>
+        <p className="text-sm text-zinc-500 mt-1">
+          {formattedDate}
+        </p>
+      </section>
+  
+      {/* Today Status */}
+      <Card className="space-y-2">
+        <p className="text-sm text-zinc-500">
+          Today
+        </p>
+  
+        {hasTodayLog ? (
+          <>
+            <p className="text-lg font-medium text-zinc-900">
+              {todayLog?.excuseCategory}
+            </p>
+            {todayLog?.note && (
+              <p className="text-sm text-zinc-500">
+                {todayLog.note}
+              </p>
+            )}
+          </>
+        ) : (
+          <>
+            <p className="text-lg font-medium text-zinc-900">
+              No excuse logged yet
+            </p>
+            <p className="text-sm text-zinc-500">
+              Logging takes less than 30 seconds.
+            </p>
+          </>
+        )}
+      </Card>
+  
+      {/* Stats */}
+      <section className="grid grid-cols-2 gap-4">
+        <StatCard
+          label="This week"
+          value={3}
+          icon={<Flame className="h-5 w-5" />}
+        />
+  
+        <StatCard
+          label="Streak"
+          value="2 days"
+          icon={<CalendarDays className="h-5 w-5" />}
+        />
+      </section>
+  
+      {/* Primary Action */}
+      <PrimaryButton>
+        <Link href="/log" aria-label={ctaAriaLabel}>
+          {ctaLabel}
+        </Link>
+      </PrimaryButton>
+    </main>
   )
 }

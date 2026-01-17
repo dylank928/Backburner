@@ -34,20 +34,22 @@ export default async function HistoryPage() {
   const categoryNames = categories.map((c) => c.name)
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      <Header />
-      <main className="max-w-4xl mx-auto px-4 py-8">
-        <div className="mb-8">
-          <h1 className="text-3xl font-semibold text-gray-900 dark:text-gray-100 mb-2">
-            History
-          </h1>
-          <p className="text-gray-600 dark:text-gray-400">
-            View your logged entries in chronological order.
-          </p>
-        </div>
-
-        <HistoryTimeline logs={logs} categories={categoryNames} />
-      </main>
-    </div>
+    <main className="mx-auto max-w-xl px-4 py-6 space-y-6">
+      {/* Page header */}
+      <section>
+        <h1 className="text-2xl font-semibold text-zinc-900">
+          History
+        </h1>
+        <p className="text-sm text-zinc-500 mt-1">
+          Your reflection timeline
+        </p>
+      </section>
+  
+      {/* Timeline */}
+      <HistoryTimeline
+        logs={logs}
+        categories={categoryNames}
+      />
+    </main>
   )
 }

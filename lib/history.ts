@@ -1,4 +1,4 @@
-import { format, startOfDay } from 'date-fns'
+import { format, startOfDay, isToday, isYesterday } from 'date-fns'
 import { ExcuseLog } from '@prisma/client'
 
 export interface GroupedLog {
@@ -7,43 +7,37 @@ export interface GroupedLog {
   logs: ExcuseLog[]
 }
 
+
+function getDayLabel(date: Date) {
+  if (isToday(date)) return 'Today'
+  if (isYesterday(date)) return 'Yesterday'
+  return format(date, 'MMMM d, yyyy')
+}
+
 /**
  * Groups ExcuseLog entries by calendar date
  * @param logs Array of ExcuseLog entries (should be sorted by date desc)
  * @returns Array of GroupedLog objects, each containing a date header and logs for that date
  */
 export function groupLogsByDate(logs: ExcuseLog[]): GroupedLog[] {
-  const groupedMap = new Map<string, ExcuseLog[]>()
-  
-  // Group logs by date (using normalized date as key)
-  for (const log of logs) {
-    const normalizedDate = startOfDay(log.date)
-    const dateKey = normalizedDate.toISOString()
-    
-    if (!groupedMap.has(dateKey)) {
-      groupedMap.set(dateKey, [])
+  const groups = new Map<string, GroupedLog>()
+
+  logs.forEach((log) => {
+    // ✅ Normalize ONLY for grouping key
+    const dayKey = startOfDay(log.date).toISOString()
+
+    if (!groups.has(dayKey)) {
+      groups.set(dayKey, {
+        date: log.date, // ⬅️ KEEP ORIGINAL DATE
+        dateLabel: getDayLabel(log.date),
+        logs: [],
+      })
     }
-    groupedMap.get(dateKey)!.push(log)
-  }
-  
-  // Convert map to array and format dates
-  const grouped: GroupedLog[] = Array.from(groupedMap.entries()).map(([dateKey, logsForDate]) => {
-    const date = new Date(dateKey)
-    
-    // Format date as "Monday, Jan 15" (e.g., "Monday, Jan 15")
-    const dateLabel = format(date, 'EEEE, MMM d')
-    
-    return {
-      date,
-      dateLabel,
-      logs: logsForDate,
-    }
+
+    groups.get(dayKey)!.logs.push(log)
   })
-  
-  // Sort by date descending (most recent first)
-  grouped.sort((a, b) => b.date.getTime() - a.date.getTime())
-  
-  return grouped
+
+  return Array.from(groups.values())
 }
 
 /**

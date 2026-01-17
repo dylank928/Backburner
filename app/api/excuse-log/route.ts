@@ -78,19 +78,22 @@ export async function POST(request: NextRequest) {
           intendedTask: intendedTask.trim(),
           excuseCategory: excuseCategory.trim(),
           note: note ? note.trim() : null,
+          date: new Date()
         },
       })
     } else {
       log = await prisma.excuseLog.create({
         data: {
           userId: user.id,
-          date: today,
+          date: new Date(),
           intendedTask: intendedTask.trim(),
           excuseCategory: excuseCategory.trim(),
           note: note ? note.trim() : null,
         },
       })
     }
+
+    console.log('Created date:' , log.date)
 
     return NextResponse.json(
       { 
